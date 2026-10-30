@@ -1,43 +1,47 @@
 import type { Product } from '../interfaces';
+import { useCartStore } from '../store';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
+  const addToCart = useCartStore((state) => state.addToCart);
+
+  const handleAddToCart = () => {
+    addToCart(product, 1);
+  };
+
+  const imageUrl =
+    product.images && product.images.length > 0
+      ? product.images[0]
+      : 'https://via.placeholder.com/300x200?text=No+Image';
+
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col">
-      <div className="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-400">
-        300 x 300
+    <div className="border border-gray-200 rounded-lg p-4 shadow-sm flex flex-col justify-between bg-white">
+      <div>
+        <img
+          src={imageUrl}
+          alt={product.title}
+          className="w-full h-48 object-cover rounded-md mb-3"
+        />
+        <span className="text-xs text-gray-400 font-mono">SKU: {product.sku}</span>
+        <h3 className="text-lg font-bold text-gray-800">{product.title}</h3>
+        <p className="text-sm text-gray-600 line-clamp-2 my-2">{product.description}</p>
       </div>
 
-      <div className="p-4 flex-1 flex flex-col justify-between">
+      <div className="mt-4 pt-3 border-t border-gray-200 flex items-center justify-between">
         <div>
-          {product.sku && (
-            <span className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded font-mono mb-1">
-              SKU: {product.sku}
-            </span>
-          )}
-          
-          <h3 className="text-sm font-bold text-gray-900 line-clamp-1">
-            {product.name}
-          </h3>
-
-          {product.description && (
-            <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-              {product.description}
-            </p>
-          )}
+          <span className="text-xl font-black text-gray-900">${product.price}</span>
+          <span className="block text-xs text-gray-500">Stock: {product.stock}</span>
         </div>
 
-        <div className="mt-4 flex items-center justify-between">
-          <span className="text-lg font-bold text-gray-900">
-            ${Number(product.price).toFixed(2)}
-          </span>
-          <span className="text-xs text-gray-500">
-            Stock: {product.stock}
-          </span>
-        </div>
+        <button
+          onClick={handleAddToCart}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-2 px-4 rounded-md transition-colors"
+        >
+          Add to Cart
+        </button>
       </div>
     </div>
   );

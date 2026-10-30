@@ -1,6 +1,19 @@
 import { create } from 'zustand';
 import { productService } from '../services';
-import type { ProductState} from '../interfaces'
+import type { Product } from '../interfaces'
+
+interface ProductState {
+  products: Product[];
+  isLoading: boolean;
+  error: string | null;
+  page: number;
+  limit: number;
+  searchQuery: string;
+  hasMore: boolean;
+  fetchProducts: (page?: number, search?: string) => Promise<void>;
+  setPage: (page: number) => void;
+  setSearchQuery: (query: string) => void;
+}
 
 export const useProductStore = create<ProductState>((set, get) => ({
   products: [],
