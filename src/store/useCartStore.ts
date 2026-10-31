@@ -4,7 +4,7 @@ import type { CartItem, Product } from '../interfaces';
 
 interface CartState {
   cart: CartItem[];
-  isOpen: boolean; // Estado para controlar si el drawer está visible
+  isOpen: boolean;
   toggleCart: () => void;
   openCart: () => void;
   closeCart: () => void;
