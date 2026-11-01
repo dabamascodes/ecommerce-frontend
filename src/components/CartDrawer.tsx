@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useCartStore } from '../store';
 import { CheckoutModal } from './CheckoutModal';
-import { checkAuthStatus } from '../services';
+import { checkAuthStatus, checkoutService } from '../services';
+import { logger } from '../utils/logger';
 
 export const CartDrawer = () => {
   const {
@@ -12,20 +13,31 @@ export const CartDrawer = () => {
     removeFromCart,
     getTotalPrice,
     clearCart,
+    setCart,
   } = useCartStore();
 
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [validationMessage, setValidationMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isOpen) {
-      checkAuthStatus()
+    if (isOpen && cart.length > 0) {
+      setValidationMessage(null);
+      checkAuthStatus().catch(() => {});
+
+      checkoutService
+        .validateCart(cart)
         .then((data) => {
-          if (data) {
-            console.log('Token refrescado exitosamente al abrir el carrito');
+          if (data && data.hasChanges) {
+            if (data.updatedItems && data.updatedItems.length > 0) {
+              setCart(data.updatedItems);
+            }
+            if (data.messages && data.messages.length > 0) {
+              setValidationMessage(data.messages[0]);
+            }
           }
         })
         .catch((err) => {
-          console.warn('No se pudo refrescar el token, posiblemente se requiera login:', err);
+          logger.error('Failed to validate cart items', err);
         });
     }
   }, [isOpen]);
@@ -53,6 +65,18 @@ export const CartDrawer = () => {
               </button>
             </div>
 
+            {validationMessage && (
+              <div className="bg-amber-50 border-b border-amber-200 px-6 py-3 text-amber-800 text-xs flex items-center justify-between">
+                <span>⚠️ {validationMessage}</span>
+                <button 
+                  onClick={() => setValidationMessage(null)}
+                  className="text-amber-600 hover:text-amber-800 font-bold ml-2"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
               {cart.length === 0 ? (
                 <div className="text-center py-20 text-gray-500">
@@ -76,13 +100,13 @@ export const CartDrawer = () => {
                     >
                       <img
                         src={imageUrl}
-                        alt={item.product.title}
+                        alt={item.product.title || item.product.name}
                         className="w-16 h-16 object-cover rounded-md border border-gray-200 shrink-0"
                       />
 
                       <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-semibold text-gray-800 truncate">
-                          {item.product.title}
+                          {item.product.title || item.product.name}
                         </h4>
                         <p className="text-sm font-bold text-gray-900 mt-0.5">
                           ${item.product.price}

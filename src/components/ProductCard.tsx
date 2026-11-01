@@ -26,7 +26,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           className="w-full h-48 object-cover rounded-md mb-3"
         />
         <span className="text-xs text-gray-400 font-mono">SKU: {product.sku}</span>
-        <h3 className="text-lg font-bold text-gray-800">{product.title}</h3>
+        <h3 className="text-lg font-bold text-gray-800">{product.name}</h3>
         <p className="text-sm text-gray-600 line-clamp-2 my-2">{product.description}</p>
       </div>
 
