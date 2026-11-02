@@ -1,9 +1,11 @@
 import { BrowserRouter } from 'react-router-dom';
-import { AppRouter } from './routes/AppRouter';
+import { Toaster } from 'sonner';
+import { AppRouter } from './routes';
 
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-right" richColors />
       <AppRouter />
     </BrowserRouter>
   );
