@@ -70,6 +70,7 @@ export const checkoutService = {
       items: cartItems.map(item => ({
         productId: item.product.id,
         quantity: item.quantity,
+        price: Number(item.product.price),
       })),
     };
     const response = await api.post('/products/validate-cart', payload);
