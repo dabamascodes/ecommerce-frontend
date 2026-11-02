@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
 import { toast } from 'sonner';
 import { logger } from '../utils/logger';
+import { checkoutService } from '../services';
 
 interface PaymentFormProps {
   onSuccess: () => void;
@@ -33,9 +34,17 @@ export const PaymentForm = ({ onSuccess, onCancel }: PaymentFormProps) => {
       toast.error(error.message || 'Payment failed. Please try again.');
       setIsProcessing(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-      logger.info('Payment Succeeded', paymentIntent);
-      toast.success('Payment processed successfully!');
-      onSuccess();
+      try {
+        await checkoutService.verifyPayment(paymentIntent.id);
+
+        logger.info('Payment Succeeded and Verified on Backend', paymentIntent);
+        toast.success('Payment processed successfully!');
+        onSuccess();
+      } catch (err: any) {
+        logger.error('Payment Verification Failed', err);
+        toast.error(err.message || 'Payment completed by Stripe, but verification failed.');
+        setIsProcessing(false);
+      }
     } else {
       toast.info('Payment status updated');
       setIsProcessing(false);

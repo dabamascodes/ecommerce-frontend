@@ -75,5 +75,15 @@ export const checkoutService = {
     };
     const response = await api.post('/products/validate-cart', payload);
     return response.data;
+  },
+
+  async verifyPayment(paymentIntentId: string) {
+    try {
+      const response = await api.post('/payments/verify-payment', { paymentIntentId });
+      return response.data;
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Failed to verify payment';
+      throw new Error(message);
+    }
   }
 };
