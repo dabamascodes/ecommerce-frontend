@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { logger } from '../utils/logger';
 import { checkoutService } from '../services';
+import { useCartStore } from '../store/useCartStore';
 
 interface PaymentFormProps {
   onSuccess: () => void;
@@ -12,7 +14,11 @@ interface PaymentFormProps {
 export const PaymentForm = ({ onSuccess, onCancel }: PaymentFormProps) => {
   const stripe = useStripe();
   const elements = useElements();
+  const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const clearCart = useCartStore((state) => state.clearCart);
+  const closeCart = useCartStore((state) => state.closeCart);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,11 +41,22 @@ export const PaymentForm = ({ onSuccess, onCancel }: PaymentFormProps) => {
       setIsProcessing(false);
     } else if (paymentIntent && paymentIntent.status === 'succeeded') {
       try {
-        await checkoutService.verifyPayment(paymentIntent.id);
+        const response = await checkoutService.verifyPayment(paymentIntent.id);
 
         logger.info('Payment Succeeded and Verified on Backend', paymentIntent);
         toast.success('Payment processed successfully!');
+
+        clearCart();
+        closeCart();
         onSuccess();
+
+        const orderId = response?.orderId || response?.order?.id || response?.id;
+        if (orderId) {
+          navigate(`/order-success/${orderId}`);
+        } else {
+          navigate('/order-success');
+        }
+
       } catch (err: any) {
         logger.error('Payment Verification Failed', err);
         toast.error(err.message || 'Payment completed by Stripe, but verification failed.');
