@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { api } from '../../services/api.config';
-import { useAuthStore } from '../../store/useAuthStore';
-import type { AuthResponse } from '../../types';
+import { api } from '../../services';
+import { useAuthStore } from '../../store';
+import type { AuthResponse } from '../../interfaces';
 
 export const LoginPage = () => {
   const [email, setEmail] = useState('');

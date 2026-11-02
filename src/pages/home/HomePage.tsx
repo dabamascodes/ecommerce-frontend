@@ -1,4 +1,4 @@
-import { useAuthStore } from '../../store/useAuthStore';
+import { useAuthStore } from '../../store';
 
 export const HomePage = () => {
   const { user, logout } = useAuthStore();
