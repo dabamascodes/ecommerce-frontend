@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle2, ShoppingBag } from 'lucide-react';
+import { CheckCircle2, Package } from 'lucide-react';
 
 export const OrderSuccessPage = () => {
   const { orderId } = useParams<{ orderId?: string }>();
@@ -35,11 +35,11 @@ export const OrderSuccessPage = () => {
 
         <div className="space-y-3">
           <Link
-            to="/"
+            to="/orders"
             className="w-full inline-flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-sm"
           >
-            <ShoppingBag className="w-4 h-4 mr-2" />
-            Back to Home
+            <Package className="w-4 h-4 mr-2" />
+            View My Orders
           </Link>
         </div>
       </div>
