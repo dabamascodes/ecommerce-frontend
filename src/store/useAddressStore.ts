@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { addressesService } from '../services/addresses.service';
+import { addressesService } from '../services';
 import type { Address, CreateAddressDto } from '../interfaces';
 
 interface AddressState {

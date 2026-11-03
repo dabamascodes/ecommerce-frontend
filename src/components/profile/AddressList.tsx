@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useAddressStore } from '../../store/useAddressStore';
+import { useAddressStore } from '../../store';
 import { AddressModal } from './AddressModal';
 import type { Address, CreateAddressDto } from '../../interfaces';
 import { toast } from 'sonner';

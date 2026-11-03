@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { usersService } from '../../services/users.service';
+import { usersService } from '../../services';
 import { toast } from 'sonner';
 
 export const UserInfoCard: React.FC = () => {

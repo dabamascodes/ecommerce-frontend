@@ -1,19 +1,60 @@
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useCartStore } from '../store';
 import { CartDrawer } from './CartDrawer';
 
-export const Navbar = () => {
+export const Navbar: React.FC = () => {
+  const location = useLocation();
   const totalItems = useCartStore((state) => state.getTotalItems());
   const openCart = useCartStore((state) => state.openCart);
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <>
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl font-black text-indigo-600">Store</span>
-            <span className="text-xs font-semibold px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded">
-              Catalog
-            </span>
+          
+          <div className="flex items-center gap-6">
+            <Link to="/products" className="flex items-center gap-2">
+              <span className="text-2xl font-black text-indigo-600">Store</span>
+              <span className="text-xs font-semibold px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded">
+                Catalog
+              </span>
+            </Link>
+
+            <nav className="hidden md:flex items-center gap-1">
+              <Link
+                to="/products"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/products') 
+                    ? 'text-indigo-600 bg-indigo-50/50 font-semibold' 
+                    : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+                }`}
+              >
+                Products
+              </Link>
+              <Link
+                to="/orders"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/orders') 
+                    ? 'text-indigo-600 bg-indigo-50/50 font-semibold' 
+                    : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+                }`}
+              >
+                Orders
+              </Link>
+              <Link
+                to="/profile"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/profile') 
+                    ? 'text-indigo-600 bg-indigo-50/50 font-semibold' 
+                    : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+                }`}
+              >
+                Profile
+              </Link>
+            </nav>
           </div>
 
           <div className="flex items-center gap-4">

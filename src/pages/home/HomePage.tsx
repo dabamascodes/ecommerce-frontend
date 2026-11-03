@@ -15,9 +15,11 @@ export const HomePage = () => {
 
         {user && (
           <div className="bg-gray-100 p-4 rounded-lg mb-6 text-left text-sm text-gray-700">
-            <p><strong>User:</strong> {user.fullName}</p>
+            <p><strong>User:</strong> {user.name}</p>
             <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Roles:</strong> {user.roles.join(', ')}</p>
+            {user.roles && (
+              <p><strong>Roles:</strong> {user.roles.join(', ')}</p>
+            )}
           </div>
         )}
 
