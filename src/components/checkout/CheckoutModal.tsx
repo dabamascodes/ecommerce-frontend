@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { useNavigate } from 'react-router-dom';
-import { checkoutService } from '../services';
-import { PaymentForm } from './PaymentForm';
-import { useCartStore } from '../store';
-import type { Address } from '../interfaces';
-import { logger } from '../utils/logger';
+import { checkoutService } from '../../services';
+import { PaymentForm } from '../checkout';
+import { useCartStore } from '../../store';
+import type { Address } from '../../interfaces';
+import { logger } from '../../utils/logger';
 import { toast } from 'sonner';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || '');

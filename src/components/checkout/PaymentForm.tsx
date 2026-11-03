@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
 import { useNavigate } from 'react-router-dom';
-import { checkoutService } from '../services';
-import { useCartStore } from '../store';
-import { logger } from '../utils/logger';
+import { checkoutService } from '../../services';
+import { useCartStore } from '../../store';
+import { logger } from '../../utils/logger';
 import { toast } from 'sonner';
 
 interface PaymentFormProps {

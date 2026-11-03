@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Package, Clock, CheckCircle2, XCircle, Truck, ChevronDown, ChevronUp, CreditCard } from 'lucide-react';
 import { ordersService } from '../../services';
-import { CheckoutModal } from '../../components';
+import { CheckoutModal } from '../../components/checkout';
 import { OrderStatus, type Order } from '../../interfaces';
 import { toast } from 'sonner';
 

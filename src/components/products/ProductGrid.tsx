@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useProductStore } from '../store';
+import { useProductStore } from '../../store';
 import { ProductCard } from './ProductCard';
 
 export const ProductGrid = () => {

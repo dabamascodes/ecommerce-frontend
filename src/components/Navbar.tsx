@@ -1,14 +1,19 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { useCartStore } from '../store';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuthStore, useCartStore } from '../store';
 import { CartDrawer } from './CartDrawer';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuthStore();
   const totalItems = useCartStore((state) => state.getTotalItems());
   const openCart = useCartStore((state) => state.openCart);
-
   const isActive = (path: string) => location.pathname === path;
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <>
@@ -34,26 +39,31 @@ export const Navbar: React.FC = () => {
               >
                 Products
               </Link>
-              <Link
-                to="/orders"
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive('/orders') 
-                    ? 'text-indigo-600 bg-indigo-50/50 font-semibold' 
-                    : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
-                }`}
-              >
-                Orders
-              </Link>
-              <Link
-                to="/profile"
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive('/profile') 
-                    ? 'text-indigo-600 bg-indigo-50/50 font-semibold' 
-                    : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
-                }`}
-              >
-                Profile
-              </Link>
+
+              {isAuthenticated && (
+                <>
+                  <Link
+                    to="/orders"
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive('/orders') 
+                        ? 'text-indigo-600 bg-indigo-50/50 font-semibold' 
+                        : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    Orders
+                  </Link>
+                  <Link
+                    to="/profile"
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive('/profile') 
+                        ? 'text-indigo-600 bg-indigo-50/50 font-semibold' 
+                        : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    Profile
+                  </Link>
+                </>
+              )}
             </nav>
           </div>
 
@@ -83,6 +93,27 @@ export const Navbar: React.FC = () => {
                 </span>
               )}
             </button>
+
+            {isAuthenticated ? (
+              <div className="flex items-center gap-3 pl-2 border-l border-gray-200">
+                <span className="hidden sm:inline text-xs font-medium text-gray-500">
+                  {user?.name}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="px-3 py-1.5 text-xs font-semibold text-red-600 hover:text-white border border-red-200 hover:bg-red-600 rounded-md transition-colors cursor-pointer"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors cursor-pointer"
+              >
+                Log In
+              </Link>
+            )}
           </div>
         </div>
       </header>

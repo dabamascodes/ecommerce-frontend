@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useProductStore } from '../store';
+import { useProductStore } from '../../store';
 
 export const ProductSearch = React.memo(() => {
   const { searchQuery, setSearchQuery } = useProductStore();

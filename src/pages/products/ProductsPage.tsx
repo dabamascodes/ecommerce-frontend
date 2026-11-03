@@ -1,4 +1,4 @@
-import { ProductGrid, ProductSearch } from '../../components';
+import { ProductGrid, ProductSearch } from '../../components/products';
 
 export const ProductsPage = () => {
   return (

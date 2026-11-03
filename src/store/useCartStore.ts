@@ -5,9 +5,12 @@ import type { CartItem, Product } from '../interfaces';
 interface CartState {
   cart: CartItem[];
   isOpen: boolean;
+  isCheckoutOpen: boolean;
   toggleCart: () => void;
   openCart: () => void;
   closeCart: () => void;
+  openCheckout: () => void;
+  closeCheckout: () => void;
   addToCart: (product: Product, quantity?: number, size?: string) => void;
   removeFromCart: (productId: string | number) => void;
   updateQuantity: (productId: string | number, quantity: number) => void;
@@ -22,10 +25,14 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       cart: [],
       isOpen: false,
+      isCheckoutOpen: false,
 
       toggleCart: () => set({ isOpen: !get().isOpen }),
-      openCart: () => set({ isOpen: true }),
+      openCart: () => set({ isOpen: true, isCheckoutOpen: false }),
       closeCart: () => set({ isOpen: false }),
+
+      openCheckout: () => set({ isOpen: false, isCheckoutOpen: true }),
+      closeCheckout: () => set({ isCheckoutOpen: false }),
 
       addToCart: (product, quantity = 1, size) => {
         const { cart } = get();
