@@ -6,30 +6,48 @@ import { OrdersPage, OrderSuccessPage } from '../pages/orders';
 import { ProtectedRoute } from './ProtectedRoute';
 import { PublicRoute } from './PublicRoute';
 import { CreateAddressPage } from '../pages/checkout/CreateAddressPage';
+import { AdminRoute } from './AdminRoute';
+import { AdminLayout } from '../components/admin/AdminLayout';
 
 export const AppRouter = () => {
   return (
-    <>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Navigate to="/products" replace />} />
-        <Route path="/products" element={<ProductsPage />} />
-        
-        <Route element={<PublicRoute />}>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+    <Routes>
+      <Route element={<AdminRoute />}>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<div className="text-xl font-semibold text-gray-700">Admin Dashboard Overview</div>} />
+          <Route path="products" element={<div className="text-xl font-semibold text-gray-700">Admin Products CRUD</div>} />
+          <Route path="orders" element={<div className="text-xl font-semibold text-gray-700">Admin Orders Management</div>} />
+          <Route path="users" element={<div className="text-xl font-semibold text-gray-700">Admin Users Management</div>} />
         </Route>
+      </Route>
 
-        <Route element={<ProtectedRoute />}>
-          <Route path="/checkout/address" element={<CreateAddressPage />} />
-          <Route path="/order-success" element={<OrderSuccessPage />} />
-          <Route path="/order-success/:orderId" element={<OrderSuccessPage />} />
-          <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-        </Route>
+      <Route
+        path="*"
+        element={
+          <>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Navigate to="/products" replace />} />
+              <Route path="/products" element={<ProductsPage />} />
 
-        <Route path="*" element={<Navigate to="/products" replace />} />
-      </Routes>
-    </>
+              <Route element={<PublicRoute />}>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+              </Route>
+
+              <Route element={<ProtectedRoute />}>
+                <Route path="/checkout/address" element={<CreateAddressPage />} />
+                <Route path="/order-success" element={<OrderSuccessPage />} />
+                <Route path="/order-success/:orderId" element={<OrderSuccessPage />} />
+                <Route path="/orders" element={<OrdersPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+              </Route>
+
+              <Route path="*" element={<Navigate to="/products" replace />} />
+            </Routes>
+          </>
+        }
+      />
+    </Routes>
   );
 };
