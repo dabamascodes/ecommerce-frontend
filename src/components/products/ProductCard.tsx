@@ -1,5 +1,5 @@
-import type { Product } from '../interfaces';
-import { useCartStore } from '../store';
+import { useCartStore } from '../../store';
+import type { Product } from '../../interfaces';
 
 interface ProductCardProps {
   product: Product;

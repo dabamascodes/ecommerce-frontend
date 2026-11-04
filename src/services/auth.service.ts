@@ -15,3 +15,17 @@ export const checkAuthStatus = async () => {
     throw error;
   }
 };
+
+export const authService = {
+  login: async (email: string, password: string) => {
+    const { data } = await api.post('/auth/login', { email, password });
+    return data;
+  },
+
+  register: async (credentials: { name: string; lastName: string; phone: string; email: string; password: string }) => {
+    const { data } = await api.post('/auth/register', credentials);
+    return data;
+  },
+
+  checkAuthStatus,
+};

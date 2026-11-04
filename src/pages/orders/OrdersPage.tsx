@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Package, Clock, CheckCircle2, XCircle, Truck, ChevronDown, ChevronUp, CreditCard } from 'lucide-react';
-import { ordersService } from '../../services/orders.service';
+import { ordersService } from '../../services';
+import { CheckoutModal } from '../../components/checkout';
 import { OrderStatus, type Order } from '../../interfaces';
-import { CheckoutModal } from '../../components/CheckoutModal';
 import { toast } from 'sonner';
 
 export const OrdersPage = () => {
