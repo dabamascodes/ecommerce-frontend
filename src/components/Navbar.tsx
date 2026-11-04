@@ -1,19 +1,70 @@
-import { useCartStore } from '../store';
+import React from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuthStore, useCartStore } from '../store';
 import { CartDrawer } from './CartDrawer';
 
-export const Navbar = () => {
+export const Navbar: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuthStore();
   const totalItems = useCartStore((state) => state.getTotalItems());
   const openCart = useCartStore((state) => state.openCart);
+  const isActive = (path: string) => location.pathname === path;
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <>
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl font-black text-indigo-600">Store</span>
-            <span className="text-xs font-semibold px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded">
-              Catalog
-            </span>
+          
+          <div className="flex items-center gap-6">
+            <Link to="/products" className="flex items-center gap-2">
+              <span className="text-2xl font-black text-indigo-600">Store</span>
+              <span className="text-xs font-semibold px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded">
+                Catalog
+              </span>
+            </Link>
+
+            <nav className="hidden md:flex items-center gap-1">
+              <Link
+                to="/products"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive('/products') 
+                    ? 'text-indigo-600 bg-indigo-50/50 font-semibold' 
+                    : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+                }`}
+              >
+                Products
+              </Link>
+
+              {isAuthenticated && (
+                <>
+                  <Link
+                    to="/orders"
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive('/orders') 
+                        ? 'text-indigo-600 bg-indigo-50/50 font-semibold' 
+                        : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    Orders
+                  </Link>
+                  <Link
+                    to="/profile"
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive('/profile') 
+                        ? 'text-indigo-600 bg-indigo-50/50 font-semibold' 
+                        : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    Profile
+                  </Link>
+                </>
+              )}
+            </nav>
           </div>
 
           <div className="flex items-center gap-4">
@@ -42,6 +93,27 @@ export const Navbar = () => {
                 </span>
               )}
             </button>
+
+            {isAuthenticated ? (
+              <div className="flex items-center gap-3 pl-2 border-l border-gray-200">
+                <span className="hidden sm:inline text-xs font-medium text-gray-500">
+                  {user?.name}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="px-3 py-1.5 text-xs font-semibold text-red-600 hover:text-white border border-red-200 hover:bg-red-600 rounded-md transition-colors cursor-pointer"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors cursor-pointer"
+              >
+                Log In
+              </Link>
+            )}
           </div>
         </div>
       </header>
