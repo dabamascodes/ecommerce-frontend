@@ -9,6 +9,12 @@ export const AddressList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
 
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; id: string; street: string }>({
+    isOpen: false,
+    id: '',
+    street: '',
+  });
+
   useEffect(() => {
     fetchAddresses();
   }, [fetchAddresses]);
@@ -37,14 +43,18 @@ export const AddressList: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this address?')) {
-      try {
-        await deleteAddress(id);
-        toast.success('Address deleted successfully');
-      } catch (error: any) {
-        toast.error(error.message || 'Failed to delete address');
-      }
+  const promptDelete = (id: string, street: string) => {
+    setDeleteConfirm({ isOpen: true, id, street });
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteAddress(deleteConfirm.id);
+      toast.success('Address deleted successfully');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to delete address');
+    } finally {
+      setDeleteConfirm({ isOpen: false, id: '', street: '' });
     }
   };
 
@@ -58,12 +68,12 @@ export const AddressList: React.FC = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100 mt-6">
+    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100 mt-6 relative">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-gray-800">My Addresses</h2>
         <button
           onClick={handleOpenCreate}
-          className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition"
+          className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition cursor-pointer"
         >
           Add New Address
         </button>
@@ -101,7 +111,7 @@ export const AddressList: React.FC = () => {
                 {!address.isDefault && (
                   <button
                     onClick={() => handleSetDefault(address.id)}
-                    className="text-xs text-blue-600 hover:underline font-medium"
+                    className="text-xs text-blue-600 hover:underline font-medium cursor-pointer"
                   >
                     Set as Default
                   </button>
@@ -109,13 +119,13 @@ export const AddressList: React.FC = () => {
                 <div className="flex space-x-3 ml-auto">
                   <button
                     onClick={() => handleOpenEdit(address)}
-                    className="text-xs text-gray-600 hover:text-blue-600 font-medium"
+                    className="text-xs text-gray-600 hover:text-blue-600 font-medium cursor-pointer"
                   >
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(address.id)}
-                    className="text-xs text-red-600 hover:text-red-800 font-medium"
+                    onClick={() => promptDelete(address.id, address.street)}
+                    className="text-xs text-red-600 hover:text-red-800 font-medium cursor-pointer"
                   >
                     Delete
                   </button>
@@ -132,6 +142,41 @@ export const AddressList: React.FC = () => {
         onSubmit={handleFormSubmit}
         addressToEdit={selectedAddress}
       />
+
+      {deleteConfirm.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden p-6 animate-in fade-in zoom-in duration-200 text-center">
+            <div className="mx-auto w-12 h-12 rounded-full flex items-center justify-center mb-4 bg-red-100 text-red-600">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </div>
+            
+            <h3 className="text-lg font-bold text-gray-800 mb-2">Delete Address</h3>
+            
+            <p className="text-sm text-gray-500 mb-6">
+              Are you sure you want to delete <span className="font-semibold text-gray-800">"{deleteConfirm.street}"</span>?
+            </p>
+
+            <div className="flex gap-3 justify-center">
+              <button
+                type="button"
+                onClick={() => setDeleteConfirm({ isOpen: false, id: '', street: '' })}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 cursor-pointer w-full"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium cursor-pointer w-full"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

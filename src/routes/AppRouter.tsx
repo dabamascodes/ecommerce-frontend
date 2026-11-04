@@ -8,16 +8,22 @@ import { PublicRoute } from './PublicRoute';
 import { CreateAddressPage } from '../pages/checkout/CreateAddressPage';
 import { AdminRoute } from './AdminRoute';
 import { AdminLayout } from '../components/admin/AdminLayout';
+import { 
+  AdminDashboardPage, 
+  AdminProductsPage, 
+  AdminOrdersPage, 
+  AdminUsersPage 
+} from '../pages/Admin';
 
 export const AppRouter = () => {
   return (
     <Routes>
       <Route element={<AdminRoute />}>
         <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<div className="text-xl font-semibold text-gray-700">Admin Dashboard Overview</div>} />
-          <Route path="products" element={<div className="text-xl font-semibold text-gray-700">Admin Products CRUD</div>} />
-          <Route path="orders" element={<div className="text-xl font-semibold text-gray-700">Admin Orders Management</div>} />
-          <Route path="users" element={<div className="text-xl font-semibold text-gray-700">Admin Users Management</div>} />
+          <Route index element={<AdminDashboardPage />} />
+          <Route path="products" element={<AdminProductsPage />} />
+          <Route path="orders" element={<AdminOrdersPage />} />
+          <Route path="users" element={<AdminUsersPage />} />
         </Route>
       </Route>
 
