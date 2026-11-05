@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar } from '../components';
-import { LoginPage, ProfilePage, RegisterPage } from '../pages/auth';
+import { LoginPage, ProfilePage, RegisterPage, SinglePageOnboarding } from '../pages/auth';
 import { ProductsPage } from '../pages/products/ProductsPage';
 import { OrdersPage, OrderSuccessPage } from '../pages/orders';
 import { ProtectedRoute } from './ProtectedRoute';
@@ -35,6 +35,8 @@ export const AppRouter = () => {
             <Routes>
               <Route path="/" element={<Navigate to="/products" replace />} />
               <Route path="/products" element={<ProductsPage />} />
+
+              <Route path="/onboarding" element={<SinglePageOnboarding />} />
 
               <Route element={<PublicRoute />}>
                 <Route path="/login" element={<LoginPage />} />

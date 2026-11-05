@@ -9,7 +9,9 @@ export const Navbar: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
   const totalItems = useCartStore((state) => state.getTotalItems());
   const openCart = useCartStore((state) => state.openCart);
+  
   const isActive = (path: string) => location.pathname === path;
+
   const handleLogout = () => {
     logout();
     navigate('/login');
@@ -107,12 +109,20 @@ export const Navbar: React.FC = () => {
                 </button>
               </div>
             ) : (
-              <Link
-                to="/login"
-                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors cursor-pointer"
-              >
-                Log In
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/login"
+                  className="px-3.5 py-1.5 text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50 border border-gray-200 rounded-md transition-colors cursor-pointer"
+                >
+                  Log In
+                </Link>
+                <Link
+                  to="/onboarding"
+                  className="px-4 py-1.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors shadow-sm cursor-pointer"
+                >
+                  Register
+                </Link>
+              </div>
             )}
           </div>
         </div>
