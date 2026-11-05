@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { Address, CreateAddressDto } from '../../interfaces';
+import { toast } from 'sonner';
 
 interface AddressModalProps {
   isOpen: boolean;
@@ -71,8 +72,8 @@ export const AddressModal: React.FC<AddressModalProps> = ({
         isDefault,
       });
       onClose();
-    } catch (error) {
-      // Error is already handled by store/toast
+    } catch (error: any) {
+        toast.error(error.message);
     } finally {
       setLoading(false);
     }

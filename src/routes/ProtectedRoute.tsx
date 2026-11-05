@@ -4,7 +4,9 @@ import { useAuthStore } from '../store';
 export const ProtectedRoute = () => {
   const { isAuthenticated } = useAuthStore();
 
-  if (!isAuthenticated) {
+  const token = localStorage.getItem('token');
+
+  if (!isAuthenticated && !token) {
     return <Navigate to="/login" replace />;
   }
 

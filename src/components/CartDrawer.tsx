@@ -53,13 +53,14 @@ export const CartDrawer = () => {
   }, [isOpen]);
 
   const handleCheckoutClick = () => {
-    closeCart();
-
     if (!isAuthenticated) {
+      localStorage.setItem('fromCheckout', 'true');
+      closeCart();
       navigate('/register', { state: { fromCheckout: true } });
       return;
     }
 
+    closeCart();
     openCheckout();
   };
 
