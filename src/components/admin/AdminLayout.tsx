@@ -7,7 +7,7 @@ import {
   ArrowLeft, 
   LogOut 
 } from 'lucide-react';
-import { useAuthStore } from '../../store/useAuthStore';
+import { useAuthStore } from '../../store';
 
 export const AdminLayout = () => {
   const { user, logout } = useAuthStore();
@@ -18,11 +18,25 @@ export const AdminLayout = () => {
     navigate('/login');
   };
 
+  let userRoles: string[] = [];
+  if (user?.roles) {
+    if (Array.isArray(user.roles)) {
+      userRoles = user.roles;
+    } else if (typeof user.roles === 'string') {
+      userRoles = (user.roles as string)
+        .replace(/[{}]/g, '')
+        .split(',')
+        .map((r) => r.trim());
+    }
+  }
+
+  const isSuperUser = userRoles.includes('super-user');
+
   const navItems = [
     { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, end: true },
     { label: 'Products', path: '/admin/products', icon: Package },
     { label: 'Orders', path: '/admin/orders', icon: ShoppingBag },
-    { label: 'Users', path: '/admin/users', icon: Users },
+    ...(isSuperUser ? [{ label: 'Users', path: '/admin/users', icon: Users }] : []),
   ];
 
   return (
@@ -82,7 +96,7 @@ export const AdminLayout = () => {
           <div className="flex items-center gap-3">
             <div className="text-right">
               <p className="text-sm font-medium text-gray-900">{user?.name || user?.email}</p>
-              <p className="text-xs text-gray-500 capitalize">{user?.roles?.join(', ')}</p>
+              <p className="text-xs text-gray-500 capitalize">{userRoles.join(', ')}</p>
             </div>
             <div className="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm">
               {(user?.name || user?.email || 'A').charAt(0).toUpperCase()}
