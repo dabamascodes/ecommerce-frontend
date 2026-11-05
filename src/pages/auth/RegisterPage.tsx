@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuthStore, useCartStore } from '../../store';
+import { authService } from '../../services';
 
 export const RegisterPage: React.FC = () => {
   const [name, setName] = useState('');
@@ -13,10 +14,12 @@ export const RegisterPage: React.FC = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const register = useAuthStore((state) => state.register);
+  const setAuth = useAuthStore((state: any) => state.setAuth);
   const closeCart = useCartStore((state) => state.closeCart);
 
-  const fromCheckout = location.state?.fromCheckout || false;
+  const fromCheckout = 
+    (location.state as any)?.fromCheckout || 
+    localStorage.getItem('fromCheckout') === 'true';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,14 +27,35 @@ export const RegisterPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await register({ name, lastName, phone, email, password });
+      const response = await authService.register({ name, lastName, phone, email, password });
+      
+      const token = response?.token;
+      const userData = response?.user || { 
+        id: response?.id, 
+        email: response?.email, 
+        name: response?.name, 
+        lastName: response?.lastName, 
+        roles: response?.roles 
+      };
+
+      if (token) {
+        localStorage.setItem('token', token);
+      }
+
+      if (userData && token) {
+        setAuth(userData, token);
+      }
+
       closeCart();
 
-      if (fromCheckout) {
-        navigate('/checkout/address');
-      } else {
-        navigate('/products');
+      const shouldGoToCheckout = localStorage.getItem('fromCheckout') === 'true';
+
+      if (shouldGoToCheckout) {
+        window.location.replace('/checkout/address');
+        return;
       }
+
+      navigate('/products', { replace: true });
     } catch (err: any) {
       const msg = err?.response?.data?.message;
       setError(Array.isArray(msg) ? msg.join(', ') : (msg || 'Registration failed. Please try again.'));
@@ -59,61 +83,61 @@ export const RegisterPage: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">First Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                 placeholder="John"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Last Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
               <input
                 type="text"
                 required
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                 placeholder="Doe"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
             <input
-              type="tel"
+              type="text"
               required
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="+1 (718) 555-3824"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+              placeholder="+1 (555) 019-2834"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email Address</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="you@example.com"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+              placeholder="john.doe@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
               placeholder="••••••••"
             />
             <p className="text-xs text-gray-500 mt-1">
@@ -124,7 +148,7 @@ export const RegisterPage: React.FC = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full mt-6 py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition disabled:opacity-50 cursor-pointer"
+            className="w-full mt-6 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold transition cursor-pointer disabled:opacity-50"
           >
             {isLoading ? 'Registering...' : 'Register & Continue'}
           </button>
