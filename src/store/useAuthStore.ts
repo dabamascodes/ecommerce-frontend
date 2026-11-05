@@ -2,34 +2,63 @@ import { create } from 'zustand';
 import type { User } from '../interfaces';
 import { authService } from '../services';
 
-
 interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
   setAuth: (user: User, token: string) => void;
-  register: (credentials: { name: string; lastName: string; phone: string; email: string; password: string }) => Promise<void>;
   logout: () => void;
+  checkAuthStatus: () => Promise<void>;
 }
 
+const getStoredUser = (): User | null => {
+  try {
+    const item = localStorage.getItem('user');
+    if (!item || item === 'undefined' || item === 'null') return null;
+    return JSON.parse(item);
+  } catch (error) {
+    localStorage.removeItem('user');
+    return null;
+  }
+};
+
 export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  token: localStorage.getItem('token'),
+  user: getStoredUser(),
+  token: localStorage.getItem('token') || null,
   isAuthenticated: !!localStorage.getItem('token'),
 
   setAuth: (user, token) => {
-    localStorage.setItem('token', token);
-    set({ user, token, isAuthenticated: true });
-  },
-
-  register: async (credentials: { name: string; lastName: string; phone: string; email: string; password: string }) => {
-    const { token, ...user } = await authService.register(credentials);
-    localStorage.setItem('token', token);
+    if (token) localStorage.setItem('token', token);
+    if (user) localStorage.setItem('user', JSON.stringify(user));
     set({ user, token, isAuthenticated: true });
   },
 
   logout: () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     set({ user: null, token: null, isAuthenticated: false });
+  },
+
+  checkAuthStatus: async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        set({ user: null, token: null, isAuthenticated: false });
+        return;
+      }
+
+      const data = await authService.checkAuthStatus();
+      const user = data.user || data;
+      const newToken = data.token || token;
+
+      localStorage.setItem('token', newToken);
+      if (user) localStorage.setItem('user', JSON.stringify(user));
+      set({ user, token: newToken, isAuthenticated: true });
+    } catch (error) {
+      console.warn('CheckAuthStatus failed, session expired or invalid');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      set({ user: null, token: null, isAuthenticated: false });
+    }
   },
 }));

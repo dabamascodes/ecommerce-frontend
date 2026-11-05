@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../../services';
 import { useAuthStore } from '../../store';
 import type { AuthResponse } from '../../interfaces';
@@ -9,6 +10,7 @@ export const LoginPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,7 +24,26 @@ export const LoginPage = () => {
         password,
       });
 
-      setAuth(response.data.user, response.data.token);
+      const responseData = response.data as any;
+      const user = responseData.user || responseData;
+      const token = responseData.token;
+
+      setAuth(user, token);
+
+      const userRoles = Array.isArray(user.roles) 
+        ? user.roles 
+        : typeof user.roles === 'string' 
+          ? user.roles.replace(/[{}]/g, '').split(',').map((r: string) => r.trim())
+          : [];
+
+      const isAdmin = userRoles.some((role: string) => role === 'admin' || role === 'super-user');
+
+      if (isAdmin) {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/products', { replace: true });
+      }
+
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to sign in. Please check your credentials.');
     } finally {
